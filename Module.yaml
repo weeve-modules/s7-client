@@ -1,0 +1,68 @@
+displayName: 'S7 Client' # Display name for the module that will be displayed in the UI.
+moduleName: 's7-client' # Module name that will be used to reference the module, and uniquely identify the module and their versions.
+description: 'This module reads out the memory of a Siemens LOGO! controller at a specified interval and sends the read values labeled with the respective virtual memory addresses to the next module.' # Module description that will be displayed in the UI.
+versionName: 'v1.0.0' # Module version name that will be used to reference the module version, and uniquely identify the module version with a common name.
+isPublic: true # Boolean value that indicates if the module is Public or Private.
+categories: # Array of category that will be used to group the module in the UI.
+  - 'Ingress'
+type: 'Input' # Module type (Input, Processing, Output) that will be used to group the module in the UI.
+image:
+  name: 'weevenetwork/s7-client' # Image name from the docker registry.
+  tag: 'v1.0.0' # Image tag from the docker registry.
+  homepage: 'https://hub.docker.com/r/weevenetwork/s7-client' # Image homepage from the docker registry.
+repository: 'https://github.com/weeve-modules/s7-client' # Repository URL to source code.
+envs: # Array of environment variables that will be used to configure the module. Also used to show related fields on the UI.
+  - name: LOGO IP
+    key: LOGO_IP
+    description: IP address at which the LOGO! controller can be reached
+    value: ''
+    type: 'text'
+    options: []
+    dependencies: []
+  - name: Local TSAP
+    key: LOCAL_TSAP
+    description: Local TSAP identifier
+    value: '0x3000'
+    type: 'text'
+    options: []
+    dependencies: []
+  - name: Remote TSAP
+    key: REMOTE_TSAP
+    description: Remote TSAP identifier (of the LOGO! controller)
+    value: '0x2000'
+    type: 'text'
+    options: []
+    dependencies: []
+  - name: Port
+    key: PORT
+    description: Port number to reach the LOGO! controller
+    value: '102'
+    type: 'number'
+    options: []
+    dependencies: []
+  - name: Payload
+    key: VM_ADDR
+    description: Comma-separated list of VM addresses to read. The address identifier should start with "V" followed by a number, with an optional "W" (word) or "D" (double-word) between them. For example "VD3" will read the third double-word (4 bytes), "VW46" - the 46-th word (2 bytes) and "V10" the 10th byte.
+    value: ''
+    type: 'text'
+    options: []
+    dependencies: []
+  - name: Poll interval
+    key: POLL_INTERVAL
+    description: Poll interval in seconds
+    value: '5'
+    type: 'number'
+    options: []
+    dependencies: []
+ports: []
+mounts: []
+envMounts: []
+devices: []
+envDevices: []
+envPorts: []
+tags: # Array of tags.
+  - 'S7'
+  - 'Python'
+  - 'Input'
+  - 'Client'
+icon: 'https://icons-020-demo.s3.eu-central-1.amazonaws.com/mi_s7_client.png' # Icon URL that will be displayed in the UI.

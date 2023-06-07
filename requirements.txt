@@ -1,0 +1,2 @@
+weeve_modules
+python-snap7

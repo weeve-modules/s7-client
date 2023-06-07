@@ -1,0 +1,18 @@
+version: "3.0"
+services:
+  s7-client:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    environment:
+      MODULE_NAME: "s7-client"
+      MODULE_TYPE: "Input"
+      EGRESS_URLS: "https://testdockercompose.free.beeceptor.com"
+      LOGO_IP: "192.168.0.3"
+      LOCAL_TSAP: "0x3000"
+      REMOTE_TSAP: "0x2000"
+      PORT: 102
+      VM_ADDR: "VD1,V6"
+      POLL_INTERVAL: 1
+    ports:
+      - 80:80
