@@ -40,7 +40,7 @@ envs: # Array of environment variables that will be used to configure the module
     type: 'number'
     options: []
     dependencies: []
-  - name: Payload
+  - name: VM addresses to read
     key: VM_ADDR
     description: Comma-separated list of VM addresses to read. The address identifier should start with "V" followed by a number, with an optional "W" (word) or "D" (double-word) between them. For example "VD3" will read the third double-word (4 bytes), "VW46" - the 46-th word (2 bytes) and "V10" the 10th byte.
     value: ''
