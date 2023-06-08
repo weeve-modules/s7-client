@@ -5,68 +5,90 @@ from os import getenv
 
 log = weeve_logger("main")
 
+DEFAULTS = {
+    "LOCAL_TSAP": "0x3000",
+    "REMOTE_TSAP": "0x2000",
+    "PORT": "102",
+    "POLL_INTERVAL": "5",
+}
 
-async def module_main(configuration):
+CONFIG = {
+    "LOGO_IP": getenv("LOGO_IP"),
+    "LOCAL_TSAP": int(getenv("LOCAL_TSAP", DEFAULTS["LOCAL_TSAP"]), 16),
+    "REMOTE_TSAP": int(getenv("REMOTE_TSAP", DEFAULTS["REMOTE_TSAP"]), 16),
+    "PORT": int(getenv("PORT", DEFAULTS["PORT"])),
+    "VM_ADDR": getenv("VM_ADDR"),
+    "POLL_INTERVAL": int(getenv("POLL_INTERVAL", DEFAULTS["POLL_INTERVAL"])),
+}
+
+vm_addrs = [vm_addr.strip() for vm_addr in CONFIG["VM_ADDR"].strip(",").split(",")]
+
+
+async def read_and_send(logo_client):
+    body = {}
+    for vm_addr in vm_addrs:
+        body[vm_addr] = int(logo_client.read(vm_addr))
+
+    send_error = send(body)
+
+    if send_error:
+        log.error(send_error)
+    else:
+        log.debug("Data sent sucessfully.")
+
+
+async def main():
     """
     Implements module's main logic for inputting data.
     Function description should not be modified.
     """
 
-    logo_client = snap7.logo.Logo()
-    logo_client.connect(
-        configuration["LOGO_IP"],
-        configuration["LOCAL_TSAP"],
-        configuration["REMOTE_TSAP"],
-        configuration["PORT"],
-    )
-
-    vm_addrs = [
-        vm_addr.strip() for vm_addr in configuration["VM_ADDR"].strip(",").split(",")
-    ]
-
-    while True:
-        if logo_client.get_connected():
-            body = {}
-            for vm_addr in vm_addrs:
-                body[vm_addr] = int(logo_client.read(vm_addr))
-
-            send_error = send(body)
-
-            if send_error:
-                log.error(send_error)
-            else:
-                log.debug("Data sent sucessfully.")
-        else:
-            log.error("not connected")
-
-        if configuration["POLL_INTERVAL"] <= 0:
-            break
-
-        await asyncio.sleep(configuration["POLL_INTERVAL"])
-
-
-async def main():
     log.info(
         "%s running with end-point set to %s",
         getenv("MODULE_NAME"),
         getenv("EGRESS_URLS"),
     )
-    configuration = {
-        "LOGO_IP": getenv("LOGO_IP"),
-        "LOCAL_TSAP": int(getenv("LOCAL_TSAP", "0x3000"), 16),
-        "REMOTE_TSAP": int(getenv("REMOTE_TSAP", "0x2000"), 16),
-        "PORT": int(getenv("PORT", "102")),
-        "VM_ADDR": getenv("VM_ADDR"),
-        "POLL_INTERVAL": int(getenv("POLL_INTERVAL", "5")),
-    }
 
-    print(configuration)
+    logo_client = snap7.logo.Logo()
 
-    await module_main(configuration)
+    log.info(
+        "Connecting to LOGO! at %s:%d Local TSAP: %s, Remote TSAP: %s",
+        CONFIG["LOGO_IP"],
+        CONFIG["PORT"],
+        hex(CONFIG["LOCAL_TSAP"]),
+        hex(CONFIG["REMOTE_TSAP"]),
+    )
+    err_code = logo_client.connect(
+        CONFIG["LOGO_IP"],
+        CONFIG["LOCAL_TSAP"],
+        CONFIG["REMOTE_TSAP"],
+        CONFIG["PORT"],
+    )
+    if err_code != 0:
+        log.error("Could not connect to LOGO! Error code: %d", err_code)
+        return
+
+    if CONFIG["POLL_INTERVAL"] > 0:
+        while logo_client.get_connected():
+            await asyncio.gather(
+                read_and_send(logo_client),
+                asyncio.sleep(CONFIG["POLL_INTERVAL"])
+            )
+        else:
+            log.error("Got disconnected from LOGO!")
+            return
+    else:  # Polling once
+        if logo_client.get_connected():
+            await read_and_send(logo_client)
+            while True:  # Wait for graceful termination
+                await asyncio.sleep(1)
+        else:
+            log.error("Got disconnected from LOGO!")
+            return
 
 
 if __name__ == "__main__":
     add_graceful_termination()
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
+    exit(1)  # Should never reach this line unless an error occurs

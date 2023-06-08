@@ -3,7 +3,7 @@
 |           |                                                                             |
 | --------- | --------------------------------------------------------------------------- |
 | Name      | S7 Client                                                                  |
-| Version   | v1.0.0                                                                      |
+| Version   | v1.0.1                                                                      |
 | DockerHub | [weevenetwork/s7-client](https://hub.docker.com/r/weevenetwork/s7-client) |
 | Authors   | Paul Gaiduk                                                                 |
 
