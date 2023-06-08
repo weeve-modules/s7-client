@@ -21,14 +21,14 @@ envs: # Array of environment variables that will be used to configure the module
     dependencies: []
   - name: Local TSAP
     key: LOCAL_TSAP
-    description: Local TSAP identifier
+    description: Local TSAP identifier in hex format like 0x...
     value: '0x3000'
     type: 'text'
     options: []
     dependencies: []
   - name: Remote TSAP
     key: REMOTE_TSAP
-    description: Remote TSAP identifier (of the LOGO! controller)
+    description: Remote TSAP identifier (of the LOGO! controller) in hex format like 0x...
     value: '0x2000'
     type: 'text'
     options: []
@@ -42,7 +42,7 @@ envs: # Array of environment variables that will be used to configure the module
     dependencies: []
   - name: VM addresses to read
     key: VM_ADDR
-    description: Comma-separated list of VM addresses to read. The address identifier should start with "V" followed by a number, with an optional "W" (word) or "D" (double-word) between them. For example "VD3" will read the third double-word (4 bytes), "VW46" - the 46-th word (2 bytes) and "V10" the 10th byte.
+    description: Comma-separated list of VM addresses to read. The address identifier should start with "V" followed by a number, with an optional "W" (word) or "D" (double-word) between them. For example "VD3" will read the third double-word (4 bytes), "VW46" - the 46-th word (bytes 46-47) and "V10" the 10th byte.
     value: ''
     type: 'text'
     options: []
@@ -65,4 +65,4 @@ tags: # Array of tags.
   - 'Python'
   - 'Input'
   - 'Client'
-icon: 'https://icons-020-demo.s3.eu-central-1.amazonaws.com/mi_s7_client.png' # Icon URL that will be displayed in the UI.
+icon: 'https://icons-020-demo.s3.eu-central-1.amazonaws.com/mi_s7_input.png' # Icon URL that will be displayed in the UI.
